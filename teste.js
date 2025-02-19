@@ -1,14 +1,12 @@
 import * as THREE from 'three';
 
-// Scene, camera, and renderer setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-    75, 
-    window.innerWidth / window.innerHeight, 
-    0.1, 
-    1000
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
-
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
@@ -16,148 +14,93 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.6;
 document.body.appendChild(renderer.domElement);
 
-// Load the panorama texture
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load('public/assets/test.jpg', () => {
-    texture.encoding = THREE.sRGBEncoding;
-    animate();
-});
+const images = ['public/assets/test.jpg', 'public/assets/milkway.jpg', 'public/assets/vlw-mw-potw.jpg', 'public/assets/armazones-sunset360.jpg'];
+let currentImageIndex = 0;
 
-// Create a large inverted sphere for the panorama
 const geometry = new THREE.SphereGeometry(500, 60, 40);
 geometry.scale(-1, 1, 1);
-
-const material = new THREE.MeshBasicMaterial({
-    map: texture,
-    toneMapped: true
-});
-
+const material = new THREE.MeshBasicMaterial();
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
-// Position the camera
+function loadTexture(index) {
+  textureLoader.load(images[index], (texture) => {
+    texture.encoding = THREE.sRGBEncoding;
+    material.map = texture;
+    material.needsUpdate = true;
+  });
+}
+
+loadTexture(currentImageIndex);
+
 camera.position.set(0, 0, 0);
 camera.rotation.order = 'YXZ';
 camera.up.set(0, 1, 0);
-
-// Add ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-// Add Mark Points
 const spriteMaterial = new THREE.SpriteMaterial({
-    map: textureLoader.load('public/assets/info-icon.png'),
-    sizeAttenuation: true // True so that perspective scaling works correctly
+  map: textureLoader.load('public/assets/info-icon.png'),
+  sizeAttenuation: true
 });
 
-// Define mark points with smaller scale
-const markPoints = [
-    { position: new THREE.Vector3(190, -75, 440), info: "Art Piece 1: Description goes here." },
-];
+const icon = new THREE.Sprite(spriteMaterial);
+icon.position.set(0, -50, 400);
+icon.scale.set(50, 50, 1);
+scene.add(icon);
 
-const sprites = [];
-markPoints.forEach((mark) => {
-    const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.position.copy(mark.position);
-    sprite.scale.set(50, 50, 1); // Very small icon
-    scene.add(sprite);
-    sprites.push({ sprite, info: mark.info });
-});
-
-// Raycaster for interaction
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Variables for drag and click detection
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 let mouseDownPosition = { x: 0, y: 0 };
-let dragThreshold = 5; // pixels
+const dragThreshold = 5;
 
-// MOUSE EVENTS
 window.addEventListener('mousedown', (event) => {
-    isDragging = true;
-    previousMousePosition.x = event.clientX;
-    previousMousePosition.y = event.clientY;
-    mouseDownPosition.x = event.clientX;
-    mouseDownPosition.y = event.clientY;
+  isDragging = true;
+  previousMousePosition.x = event.clientX;
+  previousMousePosition.y = event.clientY;
+  mouseDownPosition.x = event.clientX;
+  mouseDownPosition.y = event.clientY;
 });
 
 window.addEventListener('mouseup', (event) => {
-    // Check if this was a click or a drag
-    const dx = event.clientX - mouseDownPosition.x;
-    const dy = event.clientY - mouseDownPosition.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    isDragging = false;
-
-    // If the mouse didn't move much, treat it as a click
-    if (distance < dragThreshold) {
-        console.log("Click Position - X: " + event.clientX, "Y: " + event.clientY);
-
-        // Convert screen position to world position in Three.js
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(sphere);
-
-        if (intersects.length > 0) {
-            let point = intersects[0].point; // Get world coordinates
-            console.log("World Position:", point);
-        }
+  const dx = event.clientX - mouseDownPosition.x;
+  const dy = event.clientY - mouseDownPosition.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  isDragging = false;
+  if (distance < dragThreshold) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObject(icon);
+    if (intersects.length > 0) {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      loadTexture(currentImageIndex);
     }
+  }
 });
-
 
 window.addEventListener('mousemove', (event) => {
-    if (isDragging) {
-        const deltaX = event.clientX - previousMousePosition.x;
-        const deltaY = event.clientY - previousMousePosition.y;
-
-        // Rotate camera
-        let yaw = camera.rotation.y;
-        let pitch = camera.rotation.x;
-
-        yaw -= deltaX * 0.005;
-        pitch -= deltaY * 0.005;
-
-        pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
-
-        camera.rotation.set(pitch, yaw, 0);
-
-        previousMousePosition.x = event.clientX;
-        previousMousePosition.y = event.clientY;
-    }
+  if (isDragging) {
+    const deltaX = event.clientX - previousMousePosition.x;
+    const deltaY = event.clientY - previousMousePosition.y;
+    let yaw = camera.rotation.y;
+    let pitch = camera.rotation.x;
+    yaw -= deltaX * 0.005;
+    pitch -= deltaY * 0.005;
+    pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+    camera.rotation.set(pitch, yaw, 0);
+    previousMousePosition.x = event.clientX;
+    previousMousePosition.y = event.clientY;
+  }
 });
 
-// Function to show a modal
-function showModal(info) {
-    const modal = document.createElement('div');
-    modal.style.position = 'absolute';
-    modal.style.top = '50%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.background = 'rgba(0, 0, 0, 0.8)';
-    modal.style.color = 'white';
-    modal.style.padding = '20px';
-    modal.style.borderRadius = '10px';
-    modal.style.zIndex = '1000';
-    modal.style.fontSize = '32px';
-    modal.innerHTML = `
-        <p>${info}</p>
-        <button id="close-modal" style="margin-top: 10px;">Close</button>
-    `;
-    document.body.appendChild(modal);
-
-    // Close modal event
-    document.getElementById('close-modal').addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
-}
-
-// Animation loop
 function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
+
+animate();
