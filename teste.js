@@ -18,7 +18,7 @@ document.body.appendChild(renderer.domElement);
 
 // Load the panorama texture
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load('public/assets/panorama-teste.jpg', () => {
+const texture = textureLoader.load('public/assets/test.jpg', () => {
     texture.encoding = THREE.sRGBEncoding;
     animate();
 });
@@ -52,8 +52,7 @@ const spriteMaterial = new THREE.SpriteMaterial({
 
 // Define mark points with smaller scale
 const markPoints = [
-    { position: new THREE.Vector3(100, 50, -200), info: "Art Piece 1: Description goes here." },
-    { position: new THREE.Vector3(-150, 20, 300), info: "Integrantes do grupo: Arthur, Gustavo, Caio, Danilo, Kaua" }
+    { position: new THREE.Vector3(190, -75, 440), info: "Art Piece 1: Description goes here." },
 ];
 
 const sprites = [];
@@ -88,27 +87,28 @@ window.addEventListener('mouseup', (event) => {
     // Check if this was a click or a drag
     const dx = event.clientX - mouseDownPosition.x;
     const dy = event.clientY - mouseDownPosition.y;
-    const distance = Math.sqrt(dx*dx + dy*dy);
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
     isDragging = false;
 
     // If the mouse didn't move much, treat it as a click
     if (distance < dragThreshold) {
-        // Perform raycasting on "click"
+        console.log("Click Position - X: " + event.clientX, "Y: " + event.clientY);
+
+        // Convert screen position to world position in Three.js
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(sprites.map(s => s.sprite));
+        const intersects = raycaster.intersectObject(sphere);
 
         if (intersects.length > 0) {
-            const selected = sprites.find(s => s.sprite === intersects[0].object);
-            if (selected) {
-                showModal(selected.info);
-            }
+            let point = intersects[0].point; // Get world coordinates
+            console.log("World Position:", point);
         }
     }
 });
+
 
 window.addEventListener('mousemove', (event) => {
     if (isDragging) {
