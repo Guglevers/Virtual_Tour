@@ -31,19 +31,15 @@ Este projeto utiliza [Three.js](https://threejs.org/) para criar uma experiênci
 Substitua seu_usuario pelo seu nome de usuário do GitHub.
 
 Instale as Dependências:
-
-No diretório do projeto, execute:
-
-bash
-Copiar
+```bash
 npm install
+```
+
 Rode o Projeto Localmente:
-
-Para iniciar o projeto com Vite, execute:
-
-bash
-Copiar
+```bash
 npx vite
+```
+
 Em seguida, abra o navegador e acesse o endereço exibido no terminal (geralmente http://localhost:5173).
 
 Estrutura do Projeto
