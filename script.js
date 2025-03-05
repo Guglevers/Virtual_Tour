@@ -6,10 +6,10 @@ const scene = new THREE.Scene();
 
 // Criação da câmera com parâmetros: campo de visão (75 graus), aspecto (largura/altura), plano de corte próximo e distante
 const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
+  75, // campo de visão
+  window.innerWidth / window.innerHeight, // aspecto
+  0.1, // plano de corte próximo
+  1000 // plano de corte distante
 );
 
 // Criação do renderizador que exibirá a cena em um elemento canvas
@@ -51,9 +51,9 @@ scene.add(sphere);
 // Aqui você pode modificar ou ampliar a navegação entre imagens, adicionando novos comportamentos
 function loadTexture(index) {
   textureLoader.load(images[index], (texture) => {
-    texture.encoding = THREE.sRGBEncoding;
-    material.map = texture;
-    material.needsUpdate = true;
+    texture.encoding = THREE.sRGBEncoding; // Configura a codificação da textura
+    material.map = texture; // Aplica a textura ao material
+    material.needsUpdate = true; // Atualiza o material
   });
 }
 
@@ -77,9 +77,9 @@ const spriteMaterial = new THREE.SpriteMaterial({
 
 // Cria o sprite (ícone) e define sua posição e escala
 const icon = new THREE.Sprite(spriteMaterial);
-icon.position.set(0, -50, 400);
-icon.scale.set(50, 50, 1);
-scene.add(icon);
+icon.position.set(0, -50, 400); // Posição do ícone
+icon.scale.set(50, 50, 1); // Escala do ícone
+scene.add(icon); // Adiciona o ícone à cena
 
 // Criação do raycaster e de um vetor para detectar a posição do mouse
 const raycaster = new THREE.Raycaster();
@@ -105,7 +105,7 @@ window.addEventListener('mouseup', (event) => {
   // Calcula a distância percorrida com o mouse para diferenciar entre um clique e um arrasto
   const dx = event.clientX - mouseDownPosition.x;
   const dy = event.clientY - mouseDownPosition.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  const distance = Math.sqrt(dx * dx + dy * dy); // Distância do movimento do mouse
   isDragging = false;
   
   // Se o movimento foi menor que o limiar definido, considera como um clique
@@ -129,7 +129,7 @@ window.addEventListener('mouseup', (event) => {
 
 // Evento para detectar o movimento do mouse e atualizar a rotação da câmera
 window.addEventListener('mousemove', (event) => {
-  if (isDragging) {
+  if (isDragging) { // Se o mouse estiver sendo arrastado
     const deltaX = event.clientX - previousMousePosition.x;
     const deltaY = event.clientY - previousMousePosition.y;
     let yaw = camera.rotation.y;
@@ -147,8 +147,8 @@ window.addEventListener('mousemove', (event) => {
 
 // Função de animação que atualiza a cena e renderiza a cada frame
 function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
+  requestAnimationFrame(animate); // Chama a função recursivamente
+  renderer.render(scene, camera); // Renderiza a cena
 }
 
 // Inicia a animação
