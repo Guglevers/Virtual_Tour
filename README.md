@@ -7,16 +7,14 @@ Este projeto utiliza [Three.js](https://threejs.org/) para criar uma experiênci
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação e Execução](#instalação-e-execução)
 - [Estrutura do Projeto](#estrutura-do-projeto)
-- [Modificações e Customizações](#modificações-e-customizações)
 - [Melhorias Sugeridas](#melhorias-sugeridas)
-- [Recursos Adicionais](#recursos-adicionais)
 
 ## Pré-requisitos
 
 - [Node.js](https://nodejs.org/) (recomendado a versão LTS)
 - [Git](https://git-scm.com/)
 
-## Instalação e Execução
+## Instalação-e-Execução
 
 1. **Fork do Repositório:**
 
@@ -42,7 +40,7 @@ npx vite
 
 Em seguida, abra o navegador e acesse o endereço exibido no terminal (geralmente http://localhost:5173).
 
-Estrutura do Projeto
+## Estrutura-do-Projeto
 /public/assets/: Contém as imagens utilizadas (ex.: panorâmicas e ícone informativo).
 Código Principal:
 main.js (ou similar): Arquivo onde está implementada a lógica com Three.js.
@@ -82,7 +80,7 @@ pitch -= deltaY * 0.005;
 ```
 Para ajustar a sensibilidade do movimento ou tornar o scroll mais suave, você pode alterar o multiplicador (neste caso, 0.005). Teste diferentes valores para obter a experiência desejada.
 
-Melhorias Sugeridas:
+## Melhorias-Sugeridas:
 
 * Scroll Suave: Implementar uma função que interpole suavemente a rotação da câmera ao invés de atualizações abruptas. Uma abordagem seria utilizar animações com requestAnimationFrame para suavizar os movimentos.
 
