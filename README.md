@@ -34,14 +34,16 @@ Instale as Dependências:
 
 No diretório do projeto, execute:
 
+bash
+Copiar
 npm install
-
 Rode o Projeto Localmente:
 
 Para iniciar o projeto com Vite, execute:
 
+bash
+Copiar
 npx vite
-
 Em seguida, abra o navegador e acesse o endereço exibido no terminal (geralmente http://localhost:5173).
 
 Estrutura do Projeto
